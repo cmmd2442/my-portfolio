@@ -1,17 +1,19 @@
 import boto3
 from botocore.client import Config
-import StringIO
+import io
 import zipfile
 import mimetypes
 
 def lambda_handler(event, context):
     sns = boto3.resource('sns')
-    topic = sns.Topic('arn:aws:sns:us-east-1:462554666803:deployPortfolio2Topic')
+    topic = sns.Topic('arn:aws:sns:us-east-1:462554666803:deployPortfolioTopic')
 
     location = {
-        "bucketName": 'portfoliobuild.lehighstudentrentals.info',
+        "bucketName": 'portfoliobuild.lehighcampusrentals.info',
         "objectKey": 'portfoliobuild.zip'
     }
+    
+    print ("Building portfolio from " + str(location))
     try:
         job = event.get("CodePipeline.job")
 
@@ -20,15 +22,16 @@ def lambda_handler(event, context):
                 if artifact["name"] == "MyAppBuild":
                     location = artifact["location"]["s3Location"]
 
-        print "Building portfolio from " + str(location)
-
         s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
 
-        portfolio_bucket = s3.Bucket('portfolio.lehighstudentrentals.info')
+        portfolio_bucket = s3.Bucket('portfolio.lehighcampusrentals.com')
         build_bucket = s3.Bucket(location["bucketName"])
-
-        portfolio_zip = StringIO.StringIO()
+        
+        portfolio_zip = io.BytesIO()
+        print(build_bucket)
         build_bucket.download_fileobj(location["objectKey"], portfolio_zip)
+#         build_bucket.download_fileobj(location["objectKey"], ())
+#         portfolio_zip = io.StringIO(location[objectKey"])
 
         with zipfile.ZipFile(portfolio_zip) as myzip:
             for nm in myzip.namelist():
@@ -36,7 +39,7 @@ def lambda_handler(event, context):
                 portfolio_bucket.upload_fileobj(obj, nm, ExtraArgs={'ContentType': mimetypes.guess_type(nm)[0]})
                 portfolio_bucket.Object(nm).Acl().put(ACL='public-read')
 
-        print "Job done!"
+        print ("Job done!")
         topic.publish(Subject="Portfolio Deployed", Message="Portfolio deployed successfully!")
         if job:
             codepipeline = boto3.client('codepipeline')
@@ -46,3 +49,4 @@ def lambda_handler(event, context):
         raise
 
     return 'Hello from Lambda'
+
