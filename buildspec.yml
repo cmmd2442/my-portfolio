@@ -2,8 +2,10 @@ version: 0.1
 
 phases:
   build:
+    install:
+      runtime - versions:
+      n 16.13.0  
     commands:
-      - nvm install 16.13.0
       - npm install
       - npm run webpack
 
