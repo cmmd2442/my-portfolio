@@ -24,8 +24,8 @@ class ExampleWork extends React.Component {
           <img alt="example screenshot of a project involving chemistry"
                className="section__exampleImage"
                src="images/example2.png"/>
-          <!-- “Chemistry” by Surian Soosay is licensed under CC BY 2.0
-               https://www.flickr.com/photos/ssoosay/4097410999 -->
+	    {/*<!-- “Chemistry” by Surian Soosay is licensed under CC BY 2.0
+               https://www.flickr.com/photos/ssoosay/4097410999 -->*/}
           <dl className="color--cloud">
             <dt className="section__exampleTitle section__text--centered ">
               Work Example
