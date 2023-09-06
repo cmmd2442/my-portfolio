@@ -1,60 +1,75 @@
 import React from 'react';
+import ExampleWorkModal from './example-work-modal';
 
 class ExampleWork extends React.Component {
+  constructor(props) {
+    super(props);
 
-  render(){
+    this.state = {
+      'modalOpen': false,
+      'selectedExample': this.props.work[0]
+
+    };
+
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
+
+  openModal(evt, example) {
+    this.setState({
+      'modalOpen': true,
+      'selectedExample': example
+    });
+  }
+
+  closeModal(evt) {
+    this.setState({
+      'modalOpen': false
+    });
+  }
+
+  render() {
     return (
-    <section className="section section--alignCentered section--description">
-      <div className="section__exampleWrapper">
-        <div className="section__example">
-          <img alt="example screenshot of a project involving code"
-               className="section__exampleImage"
-               src="images/example1.png"/>
-          <dl className="color--cloud">
-            <dt className="section__exampleTitle section__text--centered">
-              Work Example
-            </dt>
-            <dd></dd>
-          </dl>
-        </div>
-      </div>
+      <span>
+        <section className="section section--alignCentered section--description">
 
-      <div className="section__exampleWrapper">
-        <div className="section__example">
-          <img alt="example screenshot of a project involving chemistry"
-               className="section__exampleImage"
-               src="images/example2.png"/>
-	    {/*<!-- “Chemistry” by Surian Soosay is licensed under CC BY 2.0
-               https://www.flickr.com/photos/ssoosay/4097410999 -->*/}
-          <dl className="color--cloud">
-            <dt className="section__exampleTitle section__text--centered ">
-              Work Example
-            </dt>
-            <dd></dd>
-          </dl>
-        </div>
-      </div>
+          {this.props.work.map( (example, idx) => {
+            return (
+              <ExampleWorkBubble key={idx} example={example}
+                openModal={this.openModal}/>
+            )
+          })}
 
-      <div className="section__exampleWrapper">
-        <div className="section__example">
-          <img alt="example screenshot of a project involving cats"
-               className="section__exampleImage"
-               src="images/example3.png"/>
-	    {/*<!-- “Bengal cat” by roberto shabs is licensed under CC BY 2.0
-               https://www.flickr.com/photos/37287295@N00/2540855181 -->*/}
-          <dl className="color--cloud">
-            <dt className="section__exampleTitle section__text--centered">
-              Work Example
-            </dt>
-            <dd></dd>
-          </dl>
-        </div>
-      </div>
-    </section>
+        </section>
 
-
+        <ExampleWorkModal example={this.state.selectedExample}
+          open={this.state.modalOpen} closeModal={this.closeModal}/>
+      </span>
     )
-  }	  
+  }
+}
+
+class ExampleWorkBubble extends React.Component {
+  render() {
+    let example = this.props.example;
+    return (
+      <div className="section__exampleWrapper"
+        onClick={ (evt) => this.props.openModal(evt, example) }>
+        <div className="section__example">
+          <img alt={example.image.desc}
+               className="section__exampleImage"
+               src={example.image.src}/>
+          <dl className="color--cloud">
+            <dt className="section__exampleTitle section__text--centered">
+              {example.title}
+            </dt>
+            <dd></dd>
+          </dl>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default ExampleWork;
+export { ExampleWorkBubble };
